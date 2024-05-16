@@ -1,0 +1,9 @@
+<RCC>
+  <qresource prefix="Main">
+    <file>app_icon.ico</file>
+  </qresource>
+  <qresource prefix="Buttons">
+    <file>canva_btn.png</file>
+    <file>excel_btn.png</file>
+  </qresource>
+</RCC>

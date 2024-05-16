@@ -1,0 +1,244 @@
+import sys 
+import os
+
+import pandas as pd
+from PySide6 import QtCore as qtc
+from PySide6 import QtWidgets as qtw
+from PySide6 import QtGui as qtg
+from PySide6.QtWidgets import QFileDialog
+
+from UI.LoadPressureWindowUI_ui import Ui_LoadPressureDialog
+
+# Example how to add check box to row and col headers 
+# https://github.com/XRay3D/ChekableTView/tree/master
+
+
+# TreeView and TableView
+# https://doc.qt.io/qt-5/modelview.html#2-2-extending-the-read-only-example-with-roles 
+
+# How to make checkbox inside table items
+
+# https://www.pythonguis.com/faq/abstract-table-model-question/
+
+
+class ComboBoxDelegate(qtw.QStyledItemDelegate):
+    def __init__(self, parent=None) -> None:
+        super().__init__(parent)
+
+
+
+    def createEditor(self, parent: qtw.QWidget, option: qtw.QStyleOptionViewItem, index: qtc.QModelIndex) -> qtw.QWidget:
+
+        editor = qtw.QComboBox(parent)
+        editor.addItems(index.model()._combo_items)
+
+        editor.currentIndexChanged.connect(lambda ind: self.setModelData(editor, index.model(), index))
+        
+        # index.model().parent.openPersistentEditor(index)
+        return editor
+        # self.editor.currentTextChanged.connect(lambda value: self.currentIndexChanged(index, value))
+    
+    def setEditorData(self, editor:qtw.QComboBox, index):
+        value = index.model().data(index, qtc.Qt.ItemDataRole.EditRole)
+        if value != None:
+            editor.setCurrentIndex(value)
+
+    def setModelData(self, editor:qtw.QComboBox, model, index):
+        model.setData(index, editor.currentIndex(), qtc.Qt.ItemDataRole.EditRole)
+
+    def updateEditorGeometry(self, editor: qtw.QWidget, option: qtw.QStyleOptionViewItem, index: qtc.QModelIndex) -> None:
+        editor.setGeometry(option.rect)
+
+    def paint(self, painter, option: qtw.QStyleOptionViewItem, index: qtc.QModelIndex):
+        # text = self.items[int(index.model().data(index, qtc.Qt.ItemDataRole.DisplayRole))]
+       
+        combo_idx = index.model()._combo_data[index.column()]
+        text = index.model()._combo_items[combo_idx]
+
+        option.text = text
+        qtw.QApplication.style().drawControl(qtw.QStyle.ControlElement.CE_ItemViewItem, option, painter)
+
+class ItemsModel(qtc.QAbstractTableModel):
+    def __init__(self, data:pd.DataFrame, *args, **kwargs) -> None:
+        super().__init__(*args, **kwargs)
+
+        self._data = data
+
+        self._combo_data = [0]*5
+
+        self._combo_items = ['pres', 'q']
+
+        self._checked = [qtc.Qt.CheckState.Checked]*5
+
+        self._checked[1] = qtc.Qt.CheckState.Unchecked
+   
+
+    def setItems(self, items):
+        pass
+
+    # def setCombo(self, index:int){
+    #     self._combo_data
+    # }
+
+    def setData(self, index: qtc.QModelIndex, value, role: qtc.Qt.ItemDataRole) -> bool:
+        
+        if(role == qtc.Qt.ItemDataRole.CheckStateRole):
+            self._checked[index.column()] = value
+            # if not self.checkIndex(index) :
+            return True
+        
+        if(role == qtc.Qt.ItemDataRole.EditRole):
+
+            if(index.row()==0):
+
+                # if(index.column()==0):    
+                #     widget = self.parent().indexWidget(index)
+                #     self._combo_data[index.column()] = widget.currentIndex()
+
+                #     print(self._combo_data)
+                # else:          
+                self._data.iloc[index.row(), index.column()] = value
+            
+
+            if(index.row()==1):
+
+                self._combo_data[index.column()] = value
+        print( self._combo_items[self._combo_data[index.column()]] )
+        # return False
+
+
+    def rowCount(self, index) -> int:
+        return self._data.shape[0]
+    
+    def columnCount(self,index) -> int:
+        return self._data.shape[1]
+    
+    def flags(self, index):
+
+        if(index.row()==0):
+
+            return qtc.Qt.ItemIsSelectable|qtc.Qt.ItemIsEnabled|qtc.Qt.ItemIsUserCheckable |qtc.Qt.ItemIsEditable
+
+        if(index.row()==1):
+            return qtc.Qt.ItemIsSelectable |qtc.Qt.ItemIsEnabled|qtc.Qt.ItemIsEditable
+        
+
+        return qtc.Qt.ItemIsSelectable |qtc.Qt.ItemIsEnabled|qtc.Qt.ItemIsEditable
+    def headerData(self, section: int, orientation: qtc.Qt.Orientation, role: qtc.Qt.ItemDataRole):
+        
+        if(orientation == qtc.Qt.Orientation.Vertical and role==qtc.Qt.ItemDataRole.DisplayRole):
+
+            if( section > 1):
+                return str(section-1)
+            
+            else:
+                return ""
+            
+        if(orientation == qtc.Qt.Orientation.Horizontal and role==qtc.Qt.ItemDataRole.DisplayRole):
+            return self._data.columns[section]
+    def data(self, index: qtc.QModelIndex, role: qtc.Qt.ItemDataRole):
+
+        if not index.isValid():
+            return
+        
+        if role == qtc.Qt.ItemDataRole.DisplayRole:
+            value = self._data.iloc[index.row(), index.column()]
+            return str(value)
+        
+        if role == qtc.Qt.ItemDataRole.CheckStateRole:
+            if(index.row()==0):
+                return self._checked[index.column()]
+            
+        if role == qtc.Qt.ItemDataRole.DisplayRole:
+            if(index.row()==1):
+                return self._combo_data[index.column()]
+            
+        if role == qtc.Qt.ItemDataRole.EditRole:
+            if(index.row()==1):
+                return self._combo_data[index.column()]
+
+
+class LoadPressureDialog(qtw.QDialog, Ui_LoadPressureDialog):
+
+    # login_success = qtc.Signal()
+
+    def __init__(self):
+        super().__init__()
+        self.setupUi(self)
+
+        self.pb_load_file.clicked.connect(self.open_file_picker_dialog)
+
+        self.pb_load_data_next.clicked.connect(self.move_to_parse_tab)
+
+    @qtc.Slot()
+    def open_file_picker_dialog(self):
+
+        fname, type = QFileDialog.getOpenFileName(
+            self,
+            "Open a folder",
+            r"C:\AllDocs\Work\IGIL\Projects\GDI_Tool"
+        )
+
+        # self.le_filepath.text = 
+        self.le_filepath.setText(str(fname))
+
+        text=open(fname).read()
+
+        self.te_filecontent.setPlainText(text)
+
+
+        
+
+    @qtc.Slot()
+    def move_to_parse_tab(self):
+        tab_parse = self.tab_get_data_steps.findChild(qtw.QWidget, "tab_parse")
+        self.tab_get_data_steps.setCurrentWidget(tab_parse)
+        filepath = r"C:/AllDocs/Work/IGIL/Projects/GDI_Tool/ГДИС_сut.csv"
+        df = pd.read_csv(filepath, 
+            sep=';', 
+            encoding='cp1251',
+            header = None,                
+        )
+
+        df.columns = ['A', 'B', 'C', 'D','E']
+
+        self.model = ItemsModel(df)
+        self.tv_parsed_data.setModel(self.model)
+        
+        # Start editing mode by a single click
+        # https://stackoverflow.com/questions/18831242/qt-start-editing-of-cell-after-one-click 
+        self.tv_parsed_data.setEditTriggers(qtw.QAbstractItemView.EditTrigger.AllEditTriggers)
+
+        # Set edit delegate
+        delegate = ComboBoxDelegate()
+        self.tv_parsed_data.setItemDelegateForRow(1, delegate)
+
+        
+        for c in range(self.model.columnCount(1)):
+            res = self.tv_parsed_data.openPersistentEditor(self.model.index(1, c))
+
+        # self.tv_parsed_data.openPersistentEditor(self.model.index(1, 0))
+
+        # comboBox = qtw.QComboBox(self.tv_parsed_data)
+        
+        # comboBox = self.tv_parsed_data.indexWidget(self.model.index(0, 0))
+
+        # comboBox.addItems(self.model._combo_items)
+        # comboBox.currentIndexChanged.connect(self.model.setCombo)
+
+        # self.tv_parsed_data.setIndexWidget(self.model.index(0, 0), comboBox )
+        # for p in range(0, self.model.columnCount(1)) :  
+        #     self.tv_parsed_data.setIndexWidget(self.model.index(0,p), qtw.QCheckBox())
+      
+
+
+        print(df)
+
+        ss= 3
+
+if __name__ == "__main__":
+    app = qtw.QApplication(sys.argv)
+
+    window = LoadPressureDialog()
+    window.show()
+    sys.exit(app.exec())

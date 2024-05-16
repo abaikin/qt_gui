@@ -1,0 +1,94 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<ui version="4.0">
+ <class>mw_Main</class>
+ <widget class="QMainWindow" name="mw_Main">
+  <property name="geometry">
+   <rect>
+    <x>0</x>
+    <y>0</y>
+    <width>800</width>
+    <height>600</height>
+   </rect>
+  </property>
+  <property name="font">
+   <font>
+    <pointsize>12</pointsize>
+   </font>
+  </property>
+  <property name="windowTitle">
+   <string>Sample App</string>
+  </property>
+  <property name="windowIcon">
+   <iconset resource="../../Application_Login/Icons/Icons.qrc">
+    <normaloff>:/Main/app_icon.ico</normaloff>:/Main/app_icon.ico</iconset>
+  </property>
+  <widget class="QWidget" name="centralwidget"/>
+  <widget class="QMenuBar" name="menubar">
+   <property name="geometry">
+    <rect>
+     <x>0</x>
+     <y>0</y>
+     <width>800</width>
+     <height>28</height>
+    </rect>
+   </property>
+   <widget class="QMenu" name="menuFile">
+    <property name="title">
+     <string>File</string>
+    </property>
+    <addaction name="action_Quit"/>
+   </widget>
+   <widget class="QMenu" name="menuPerson">
+    <property name="title">
+     <string>Person</string>
+    </property>
+    <addaction name="action_AddPerson"/>
+   </widget>
+   <addaction name="menuFile"/>
+   <addaction name="menuPerson"/>
+  </widget>
+  <widget class="QStatusBar" name="statusbar"/>
+  <action name="action_Quit">
+   <property name="icon">
+    <iconset resource="../../Application_Login/Icons/Icons.qrc">
+     <normaloff>:/Buttons/canva_btn.png</normaloff>:/Buttons/canva_btn.png</iconset>
+   </property>
+   <property name="text">
+    <string>Quit</string>
+   </property>
+   <property name="font">
+    <font>
+     <pointsize>12</pointsize>
+    </font>
+   </property>
+  </action>
+  <action name="actionAdd_Person">
+   <property name="text">
+    <string>Add Person</string>
+   </property>
+   <property name="font">
+    <font>
+     <pointsize>12</pointsize>
+    </font>
+   </property>
+  </action>
+  <action name="action_AddPerson">
+   <property name="icon">
+    <iconset resource="../../Application_Login/Icons/Icons.qrc">
+     <normaloff>:/Buttons/excel_btn.png</normaloff>:/Buttons/excel_btn.png</iconset>
+   </property>
+   <property name="text">
+    <string>Add Person</string>
+   </property>
+   <property name="font">
+    <font>
+     <pointsize>12</pointsize>
+    </font>
+   </property>
+  </action>
+ </widget>
+ <resources>
+  <include location="../../Application_Login/Icons/Icons.qrc"/>
+ </resources>
+ <connections/>
+</ui>

@@ -1,0 +1,24 @@
+pip install virtualenv
+python -m venv env
+.\env\Scripts\activate
+pip install -r requirements.txt
+
+
+#Also in VSCode install exts
+- Create Blank Python Module
+- Qt for Python (to call qt-desingner use Ctrl+Shift+P)
+
+To convert UI to PY use pyside6-uic
+To convert RSC to PY use pyside6-rsc
+
+First App in PySide6, See https://www.youtube.com/watch?v=uzqDnB44qf4 
+
+
+Crtl+R - preview in Qt-desingner
+
+# To use uic from qt designer copy uic.exe from .\VEnvPython39\Lib\site-packages\PySide6
+# to .\VEnvPython39\Lib\site-packages\PySide6\bin\
+# Then go Form -> Show Code in Python
+
+
+Advance GUI Window in PySide https://www.youtube.com/watch?v=au01t_WOe_Q 
