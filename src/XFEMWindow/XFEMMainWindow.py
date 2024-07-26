@@ -48,7 +48,8 @@ class XFEMMainWindow(QtWidgets.QMainWindow, Ui_MainWindow):
         #     r"C:\AllDocs\Work\Repositories\qt_gui"
         # )
 
-        fname = r'C:/AllDocs/Work/Repositories/qt_gui/Project1.json'
+        # fname = r'C:/AllDocs/Work/Repositories/qt_gui/Project1.json'
+        fname = r'./Project1.json'
 
         # self.le_filepath.text = 
         # self.le_filepath.setText(str(fname))

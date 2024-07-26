@@ -1,7 +1,20 @@
+sudo apt install python3-pip
+sudo apt install python3.10-venv
+
 pip install virtualenv
+
+On Windows
 python -m venv env
 .\env\Scripts\activate
+
+on Linux use make activate "is Executable"
+source ./env/bin/activate
+
 pip install -r requirements.txt
+
+Ctrl + Shift + P
+type "Python: Select Interpreter"
+choose python from env forlder
 
 
 #Also in VSCode install exts
