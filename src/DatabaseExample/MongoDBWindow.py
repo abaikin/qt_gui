@@ -17,7 +17,9 @@ from UI.MongoDBWindow_ui import Ui_Form
 # Step 1. Install mongodb local server 
 # https://www.mongodb.com/try/download/community
 
-# Step 2.
+# Step 2. See my example. For more see https://pymongo.readthedocs.io/en/stable/tutorial.html 
+
+# Step 3. Use mongodb compass to look through database
 
 
 class MongoDBDialog(qtw.QDialog, Ui_Form):
