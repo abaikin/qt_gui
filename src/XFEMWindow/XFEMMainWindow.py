@@ -15,6 +15,8 @@ import json
 script_path = os.path.dirname(os.path.realpath(__file__))
 sys.path.append(script_path+'/UI/')
 
+sys.path.append(script_path+'/Backend/')
+
 from UI.XFEMMainWindowUI_ui import Ui_MainWindow
 # from UI.ProjectViewUI_ui import Ui_ProjectView
 # from XFEMWindow.ProjectView import ProjectView
@@ -79,8 +81,13 @@ class XFEMMainWindow(QtWidgets.QMainWindow, Ui_MainWindow):
 
     def open_project(self):
         self.startPage.setParent(None)
+
+
+        fname = r'./Project1.json'
         
-        project = ProjectData()
+        project = ProjectData(fname)
+
+        project.loadStatesFromFolder()
         
         stackedWidget = ProjectStackedWidget(project, self)
         self.setCentralWidget(stackedWidget)
